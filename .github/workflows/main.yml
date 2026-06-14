@@ -1,5 +1,5 @@
 # THE FOLLOWING ACTIONS CODE IS FROM THE PSYCH ENGINE REPO: https://github.com/ShadowMario/FNF-PsychEngine/blob/main/.github/workflows/main.yml
-# FIXED VERSION CONFLICTS FOR DAVE AND BAMBI MODS
+# FINAL COMPATIBILITY PATCH FOR DAVE AND BAMBI SOURCE
 
 name: Build
 
@@ -26,7 +26,7 @@ jobs:
           haxelib setup C:/haxelib
           haxelib install hxcpp > nul
           
-          :: Forzar Versiones Base Correctas (Evita que descargue Flixel 6.X)
+          :: Forzar Versiones Base Correctas
           haxelib install lime 7.9.0 --always
           haxelib install openfl 9.1.0 --always
           haxelib install flixel 4.11.0 --always
@@ -54,8 +54,8 @@ jobs:
           haxelib git faxe https://github.com/uhrobots/faxe --always
           haxelib git polymod https://github.com/MasterEric/polymod.git --always
           
-          :: Solución al VideoHandler (Forzar hxCodec 2.6.1)
-          haxelib git hxCodec https://github.com/polybiusproxy/hxCodec --always
+          :: FORZAR LA VERSIÓN RESTRUCTURADA DE HXCODEC CON VIDEOHANDLER
+          haxelib git hxCodec https://github.com/polybiusproxy/hxCodec v2.6.1 --always
           
           haxelib install hxcpp-debug-server --always
           haxelib list
@@ -66,7 +66,7 @@ jobs:
         shell: cmd
 
       - name: Compile
-        run: haxelib run lime build windows --app-version="4.0.0-${{ github.run_id}}"
+        run: haxelib run lime build windows -D dcb -D static --app-version="4.0.0-${{ github.run_id}}"
         shell: cmd
 
       - name: Publish Artifact

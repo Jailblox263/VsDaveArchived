@@ -1,4 +1,4 @@
-name: Compilar Dave and Bambi
+name: Compilar Dave and Bambi (Super Mejorado)
 
 on:
   workflow_dispatch:
@@ -16,24 +16,52 @@ jobs:
         with:
           haxe-version: 4.2.5
 
-      - name: Configurar e Instalar Librerías
+      - name: Configurar Memoria Caché para Librerías
+        uses: actions/cache@v4
+        with:
+          path: |
+            .haxelib
+            export/release/windows/obj
+          key: ${{ runner.os }}-fnf-build-${{ hashFiles('**/haxelib.json', '**/hmm.json') }}
+          restore-keys: |
+            ${{ runner.os }}-fnf-build-
+
+      - name: Instalar Todas las Librerías de la Comunidad FNF
         run: |
           haxelib setup .haxelib
-          haxelib install lime 7.9.0
-          haxelib install openfl 9.1.0
-          haxelib install flixel 4.11.0
+          
+          :: Librerías Base del Motor Gráfico y Físicas
+          haxelib install lime 7.9.0 --always
+          haxelib install openfl 9.1.0 --always
+          haxelib install flixel 4.11.0 --always
           haxelib run lime setup flixel
           haxelib run lime setup
           haxelib run openfl setup
-          haxelib install flixel-tools
-          haxelib install flixel-addons 2.11.0
-          haxelib install flixel-ui
-          haxelib install hscript
-          haxelib install newgrounds
-          haxelib git linc_luajit https://github.com/AndreiRudenko/linc_luajit
-          haxelib git faxe https://github.com/ashea-code/faxe
-          haxelib git polymod https://github.com/MasterSenshi/polymod-fixed
-          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+          
+          :: Extensiones de Interfaz, Addons y Scripts
+          haxelib install flixel-tools --always
+          haxelib install flixel-addons 2.11.0 --always
+          haxelib install flixel-ui --always
+          haxelib install hscript --always
+          haxelib install newgrounds --always
+          
+          :: Librerías críticas de Video y Sonido (Evita el error de hxCodec y hxcpp)
+          haxelib install hxCodec 2.5.1 --always
+          haxelib install linc_luajit --always
+          
+          :: Repositorios Git con parches específicos de FNF (Faxe, Polymod, Discord)
+          haxelib git linc_luajit https://github.com/AndreiRudenko/linc_luajit --always
+          haxelib git faxe https://github.com/ashea-code/faxe --always
+          haxelib git polymod https://github.com/MasterSenshi/polymod-fixed --always
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc --always
+          haxelib git extension-webm https://github.com/KadeDev/extension-webm --always
+          
+          :: Si el mod usa un instalador automático interno (HMM) lo ejecuta aquí
+          if exist hmm.json (
+              haxelib install hmm --always
+              haxelib run hmm setup
+          )
+          
           haxelib list
         shell: cmd
 

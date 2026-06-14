@@ -1,80 +1,157 @@
-name: Compilar Dave and Bambi (Super Mejorado)
+# THE FOLLOWING ACTIONS CODE IS FROM THE PSYCH ENGINE REPO: https://github.com/ShadowMario/FNF-PsychEngine/blob/main/.github/workflows/main.yml
 
+name: Build
+
+# Controls when the action will run.
 on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  build-windows:
+  # This workflow contains a single job called "build"
+  buildLinux:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-22.04
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.2.5
+      # Runs a set of commands using the runners shell
+      - name: Install Haxelib
+        run: |
+          sudo apt-get install libvlc-dev libvlccore-dev vlc glibc-source libidn-dev libidn12
+          haxelib setup ~/haxelib
+          haxelib install hxcpp > /dev/null
+          haxelib install lime
+          haxelib install openfl
+          haxelib --never install flixel
+          haxelib run lime setup flixel
+          haxelib run lime setup
+          haxelib install flixel-tools
+          haxelib install flixel-ui
+          haxelib install flixel-addons
+          haxelib install tjson
+          haxelib install hxjsonast
+          haxelib install hxCodec
+          haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit
+          haxelib install hscript
+          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+          haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit
+          haxelib git faxe https://github.com/uhrobots/faxe
+          haxelib git polymod https://github.com/MasterEric/polymod.git
+          haxelib git hxCodec https://github.com/polybiusproxy/hxCodec
+          haxelib install hxcpp-debug-server
+          haxelib list
+      - name: Create Version Tag
+        run: echo "${{github.run_id}}" > VERSION
+      - name: Compile
+        run: haxelib run lime build Project.xml linux --app-version="4.0.0-${{ github.run_id}}"
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: linuxBuild
+          path: 'export/release/linux/bin'
+  buildWindows:
     runs-on: windows-latest
 
     steps:
-      - name: Clonar Repositorio
-        uses: actions/checkout@v4
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2.3.0
 
-      - name: Instalar Haxe
-        uses: krdlab/setup-haxe@v1
+      - uses: krdlab/setup-haxe@master
         with:
           haxe-version: 4.2.5
-
-      - name: Configurar Memoria Caché para Librerías
-        uses: actions/cache@v4
-        with:
-          path: |
-            .haxelib
-            export/release/windows/obj
-          key: ${{ runner.os }}-fnf-build-${{ hashFiles('**/haxelib.json', '**/hmm.json') }}
-          restore-keys: |
-            ${{ runner.os }}-fnf-build-
-
-      - name: Instalar Todas las Librerías de la Comunidad FNF
+      # Runs a set of commands using the runners shell
+      - name: Install Haxelib
         run: |
-          haxelib setup .haxelib
-          
-          :: Librerías Base del Motor Gráfico y Físicas (Orden estricto)
-          haxelib install lime 7.9.0 --always
-          haxelib install openfl 9.1.0 --always
-          haxelib install flixel 4.11.0 --always
+          haxelib setup C:/haxelib
+          haxelib install hxcpp > nul
+          haxelib install lime
+          haxelib install openfl
+          haxelib --never install flixel
           haxelib run lime setup flixel
           haxelib run lime setup
-          haxelib run openfl setup
-          
-          :: Extensiones de Interfaz y Ajuste Crítico de Compatibilidad
-          haxelib install flixel-tools --always
-          haxelib install flixel-ui --always
-          haxelib install hscript --always
-          haxelib install newgrounds --always
-          
-          :: FORZAR VERSION COMPATIBLE DE ADDONS (Esto arregla el error de FlxTransitionableState)
-          haxelib install flixel-addons 2.11.0 --always
-          haxelib set flixel-addons 2.11.0
-          
-          :: Librerías de Video y Sonido
-          haxelib install hxCodec 2.5.1 --always
-          haxelib install linc_luajit --always
-          
-          :: Repositorios Git con parches específicos de FNF
-          haxelib git linc_luajit https://github.com/AndreiRudenko/linc_luajit --always
-          haxelib git faxe https://github.com/ashea-code/faxe --always
-          haxelib git polymod https://github.com/MasterSenshi/polymod-fixed --always
-          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc --always
-          haxelib git extension-webm https://github.com/KadeDev/extension-webm --always
-          
-          :: Si el mod usa HMM remoto, lo procesa
-          if exist hmm.json (
-              haxelib install hmm --always
-              haxelib run hmm setup
-          )
-          
+          haxelib install flixel-tools
+          haxelib install flixel-ui
+          haxelib install flixel-addons
+          haxelib install tjson
+          haxelib install hxjsonast
+          haxelib install hxCodec
+          haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit
+          haxelib install hscript
+          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+          haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit
+          haxelib git faxe https://github.com/uhrobots/faxe
+          haxelib git polymod https://github.com/MasterEric/polymod.git
+          haxelib git hxCodec https://github.com/polybiusproxy/hxCodec
+          haxelib install hxcpp-debug-server
           haxelib list
         shell: cmd
-
-      - name: Compilar Juego (Release)
-        run: |
-          haxelib run lime build windows -release
-        shell: cmd
-
-      - name: Publicar Ejecutable Terminado
-        uses: actions/upload-artifact@v4
+      - name: Create Version Tag
+        run: echo "${{github.run_id}}" > VERSION
+      - name: Compile
+        run: haxelib run lime build windows --app-version="4.0.0-${{ github.run_id}}"
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2.2.4
         with:
-          name: Dave-and-Bambi-Windows-Build
-          path: export/release/windows/bin/*
+          name: windowsBuild
+          path: export/release/windows/bin
+  buildMac:
+    runs-on: macos-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.2.5
+      # Runs a set of commands using the runners shell
+      - name: Install Haxelib
+        run: |
+          haxelib setup ~/haxelib
+          haxelib install hxcpp > /dev/null
+          haxelib install lime
+          haxelib install openfl
+          haxelib --never install flixel
+          haxelib run lime setup flixel
+          haxelib run lime setup
+          haxelib install flixel-tools
+          haxelib install flixel-ui
+          haxelib install flixel-addons
+          haxelib install tjson
+          haxelib install hxjsonast
+          haxelib install hxCodec
+          haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit
+          haxelib install hscript
+          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+          haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit
+          haxelib git faxe https://github.com/uhrobots/faxe
+          haxelib git polymod https://github.com/MasterEric/polymod.git
+          haxelib git hxCodec https://github.com/polybiusproxy/hxCodec
+          haxelib install hxcpp-debug-server
+          haxelib list
+      - name: Create Version Tag
+        run: echo "${{github.run_id}}" > VERSION
+      - name: Compile
+        run: haxelib run lime build mac --app-version="4.0.0-${{ github.run_id}}"
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: macBuild
+          path: export/release/macos/bin

@@ -24,6 +24,7 @@ jobs:
           haxelib install flixel 4.11.0
           haxelib run lime setup flixel
           haxelib run lime setup
+          haxelib run openfl setup
           haxelib install flixel-tools
           haxelib install flixel-addons 2.11.0
           haxelib install flixel-ui
@@ -37,7 +38,8 @@ jobs:
         shell: cmd
 
       - name: Compilar Juego (Release)
-        run: lime build windows -release
+        run: |
+          haxelib run lime build windows -release
         shell: cmd
 
       - name: Publicar Ejecutable Terminado

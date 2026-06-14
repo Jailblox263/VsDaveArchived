@@ -30,7 +30,7 @@ jobs:
         run: |
           haxelib setup .haxelib
           
-          :: Librerías Base del Motor Gráfico y Físicas
+          :: Librerías Base del Motor Gráfico y Físicas (Orden estricto)
           haxelib install lime 7.9.0 --always
           haxelib install openfl 9.1.0 --always
           haxelib install flixel 4.11.0 --always
@@ -38,25 +38,28 @@ jobs:
           haxelib run lime setup
           haxelib run openfl setup
           
-          :: Extensiones de Interfaz, Addons y Scripts
+          :: Extensiones de Interfaz y Ajuste Crítico de Compatibilidad
           haxelib install flixel-tools --always
-          haxelib install flixel-addons 2.11.0 --always
           haxelib install flixel-ui --always
           haxelib install hscript --always
           haxelib install newgrounds --always
           
-          :: Librerías críticas de Video y Sonido (Evita el error de hxCodec y hxcpp)
+          :: FORZAR VERSION COMPATIBLE DE ADDONS (Esto arregla el error de FlxTransitionableState)
+          haxelib install flixel-addons 2.11.0 --always
+          haxelib set flixel-addons 2.11.0
+          
+          :: Librerías de Video y Sonido
           haxelib install hxCodec 2.5.1 --always
           haxelib install linc_luajit --always
           
-          :: Repositorios Git con parches específicos de FNF (Faxe, Polymod, Discord)
+          :: Repositorios Git con parches específicos de FNF
           haxelib git linc_luajit https://github.com/AndreiRudenko/linc_luajit --always
           haxelib git faxe https://github.com/ashea-code/faxe --always
           haxelib git polymod https://github.com/MasterSenshi/polymod-fixed --always
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc --always
           haxelib git extension-webm https://github.com/KadeDev/extension-webm --always
           
-          :: Si el mod usa un instalador automático interno (HMM) lo ejecuta aquí
+          :: Si el mod usa HMM remoto, lo procesa
           if exist hmm.json (
               haxelib install hmm --always
               haxelib run hmm setup

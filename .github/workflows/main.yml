@@ -1,5 +1,5 @@
 # THE FOLLOWING ACTIONS CODE IS FROM THE PSYCH ENGINE REPO: https://github.com/ShadowMario/FNF-PsychEngine/blob/main/.github/workflows/main.yml
-# FINAL COMPATIBILITY PATCH FOR DAVE AND BAMBI SOURCE
+# FIX FOR HXCODEC GIT INSTALLATION
 
 name: Build
 
@@ -54,8 +54,8 @@ jobs:
           haxelib git faxe https://github.com/uhrobots/faxe --always
           haxelib git polymod https://github.com/MasterEric/polymod.git --always
           
-          :: FORZAR LA VERSIÓN RESTRUCTURADA DE HXCODEC CON VIDEOHANDLER
-          haxelib git hxCodec https://github.com/polybiusproxy/hxCodec v2.6.1 --always
+          :: CORRECCIÓN DE SINTAXIS: Descargar hxCodec directamente de los servidores de Haxe en su versión con VideoHandler
+          haxelib install hxCodec 2.6.1 --always
           
           haxelib install hxcpp-debug-server --always
           haxelib list

@@ -1,5 +1,5 @@
 # THE FOLLOWING ACTIONS CODE IS FROM THE PSYCH ENGINE REPO: https://github.com/ShadowMario/FNF-PsychEngine/blob/main/.github/workflows/main.yml
-# FIX FOR HXCODEC GIT INSTALLATION
+# REMOVED RESERVED COMPILER FLAGS
 
 name: Build
 
@@ -54,7 +54,7 @@ jobs:
           haxelib git faxe https://github.com/uhrobots/faxe --always
           haxelib git polymod https://github.com/MasterEric/polymod.git --always
           
-          :: CORRECCIÓN DE SINTAXIS: Descargar hxCodec directamente de los servidores de Haxe en su versión con VideoHandler
+          :: Instalar hxCodec estable con VideoHandler
           haxelib install hxCodec 2.6.1 --always
           
           haxelib install hxcpp-debug-server --always
@@ -66,7 +66,7 @@ jobs:
         shell: cmd
 
       - name: Compile
-        run: haxelib run lime build windows -D dcb -D static --app-version="4.0.0-${{ github.run_id}}"
+        run: haxelib run lime build windows -D dcb --app-version="4.0.0-${{ github.run_id}}"
         shell: cmd
 
       - name: Publish Artifact
